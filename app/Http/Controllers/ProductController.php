@@ -17,40 +17,48 @@ class ProductController extends Controller
     use ApiResponser;
     public function create(Request $request) {
         $data = Validator::make($request->all(), [
-            "id" => "required|unique:products",
+            "id" => "required|unique:products,id",
             "name" => "required|string",
-            "detail" => "string",
-            "type" => [
-                "required" , Rule::in(["cream","injection","tab"])
-            ],
+            "detail" => "nullable|string",
+            "type" => "required|exists:types,id",
+            "price"=> "required|numeric|gt:0",
             "dose" => "required|string",
-            "expiry_date" => "required|date",
-            "production_date" => "required|date",
+            "production_date" => "required|date|before:$request->expiry_date",
+            "expiry_date" => "required|date|after:$request->production_date",
             "quantity" => "required|numeric",
-            "company_name" => "string",
-            "category_id" => "required|exists:categories,id"
+            "company_name" => "nullable|string",
         ]) ;
+
         if($data->fails()){
-            return $this->error("error", $data->errors(), 400);
+            return $this->error("الرجاء مراجعة المدخلات, او المنتج موجود مسبقا", $data->errors(), 400);
         }else {
             $data = $data->validated();
             $product = Product::create([
                 "id" => $data["id"],
                 "name" => $data["name"],
-                "detail" => $data["detail"],
-                "type" => $data["type"],
+                "detail" => $data["detail"] ?? "",
+                "type_id" => $data["type"],
                 "dose" => $data["dose"],
+                "price" => $data["price"],
                 "expiry_date" => $data["expiry_date"],
                 "production_date" => $data["production_date"],
                 "quantity" => $data["quantity"],
                 "created_by_id" => Auth::user()->id,
-                "company_name" => $data["company_name"],
-                "category_id" => $data["category_id"],
+                "company_name" => $data["company_name"] ?? "",
                 "created_at" => date('now'),
                 "updated_at" => date('now'),
             ]);
 
-            return $this->success($product, "product has been created successfully");
+            return $this->success($product, "تم ادخال المنتج بنجاح");
+        }
+    }
+
+    public function index(Product $id) {
+        $product = $id;
+        if ($product) {
+            return $this->success($product, "success", 200);
+        } else {
+            return $this->error("error", null, 404);
         }
     }
 

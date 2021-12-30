@@ -37,14 +37,23 @@ class UserController extends Controller
     }
 
     public function indexAll($role) {
-            $allUsersWithRoles = DB::table("users")
-                ->join("role_user", "users.id","=","role_user.user_id")
-                ->join("roles","roles.id","role_user.role_id")
-                ->select("users.*","roles.name as roleName")
-                ->where("roles.name","like" ,$role)
-                ->where("users.deleted_at", "=" , null)
-                ->where("users.id", "!=", Auth::user()->id)
-                ->get();
+        $allUsersWithRoles = User::whereHas("roles" , function($query) use($role){
+            $query->where("name", "like", $role);
+        })
+        ->with("roles")
+        ->where("id","!=",auth()->user()->id)
+        ->get();
+
+        // $allUsersWithRoles = User::with("roles")->paginate(1);
+
+        /* old method */
+        // $allUsersWithRoles = DB::table("users")
+            //     ->join("role_user", "users.id","=","role_user.user_id")
+            //     ->join("roles","roles.id","role_user.role_id")
+            //     ->select("users.*","roles.name as roleName")
+            //     ->where("roles.name","like" ,$role)
+            //     ->where("users.id", "!=", Auth::user()->id)
+            //     ->get();
             return $this->success($allUsersWithRoles,sizeof($allUsersWithRoles),200);
     }
 
@@ -57,7 +66,7 @@ class UserController extends Controller
             $user->name = $data["name"] ?? $user->name;
             $user->lastName = $data["lastname"] ?? $user->lastName;
             $user->password = isset($data["password"]) ? Hash::make($data["password"]) : $user->password;
-            $user->phone = $data["phone"] ?? $user->phone;
+            $user->phone = $data["phone"];
             $user->save();
             $user->asignRole($data["role"]);
             return $this->success($user ,"user updated successfully",200);

@@ -21,46 +21,70 @@ class DatabaseSeeder extends Seeder
     {
         // \App\Models\User::factory(10)->create();
         DB::table('users')->insert([
-            'name' => "SuperAdmin",
+            'name' => "admin",
             'email' => "admin@gmail.com",
-            'password' => Hash::make('Root123'),
+            'password' => Hash::make('123456'),
         ]);
 
-        $user = User::whereName("SuperAdmin")->firstOrFail();
+        $user = User::whereName("admin")->firstOrFail();
 
         $superAdmin = Role::create([
-            "name" => "superAdmin"
+            "name" => "admin"
         ]);
 
         $seller = Role::create([
             "name" => "seller"
         ]);
 
-        $visitor = Role::create([
-            "name" => "visitor"
-        ]);
-
-        $access = Permission::create([
+        /* general permissions */
+        Permission::create([
             "name" => "access"
         ]);
-        $create = Permission::create([
-            "name" => "create"
-        ]);
-        $insert = Permission::create([
-            "name" => "insert"
-        ]);
-        $update = Permission::create([
-            "name" => "update"
-        ]);
-        $delete = Permission::create([
-            "name" => "delete"
+
+        Permission::create([
+            "name" => "index"
         ]);
 
-        $superAdmin->allowTo($access);
-        $superAdmin->allowTo($create);
-        $superAdmin->allowTo($insert);
-        $superAdmin->allowTo($update);
-        $superAdmin->allowTo($delete);
+        /* permissions for managing products */
+        Permission::create([
+            "name" => "indexProducts"
+        ]);
+
+         Permission::create([
+            "name" => "createProducts"
+        ]);
+
+        Permission::create([
+            "name" => "updateProducts"
+        ]);
+
+        Permission::create([
+            "name" => "deleteProducts"
+        ]);
+
+        /* permissions for managing users */
+        Permission::create([
+            "name" => "indexUsers"
+        ]);
+
+        Permission::create([
+            "name" => "createUsers"
+        ]);
+
+        Permission::create([
+            "name" => "updateUsers"
+        ]);
+
+        Permission::create([
+            "name" => "deleteUsers"
+        ]);
+
+        $allPermissions = Permission::all();
+
+        foreach($allPermissions as $permission) {
+            $superAdmin->allowTo($permission->name);
+        }
+
         $user->asignRole($superAdmin);
 
     }
