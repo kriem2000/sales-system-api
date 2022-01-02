@@ -53,8 +53,8 @@ class ProductController extends Controller
         }
     }
 
-    public function index(Product $id) {
-        $product = $id;
+    public function index($id) {
+        $product = Product::where([["id","=",$id],["quantity",">","0"]])->firstOrFail();
         if ($product) {
             return $this->success($product, "success", 200);
         } else {
