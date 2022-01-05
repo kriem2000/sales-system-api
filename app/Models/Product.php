@@ -15,6 +15,8 @@ class Product extends Model
      * @var array
      */
     protected $guarded =[];
+    public $incrementing = false;
+    protected $keyType = 'string';
 
     public function user() {
         return $this->belongsTo(User::class, 'created_by_id');

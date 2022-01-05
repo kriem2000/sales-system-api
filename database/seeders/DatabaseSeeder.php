@@ -20,15 +20,15 @@ class DatabaseSeeder extends Seeder
     public function run()
     {
         // \App\Models\User::factory(10)->create();
+        /* admin who is Responsible for all the system */
         DB::table('users')->insert([
             'name' => "admin",
             'email' => "admin@gmail.com",
             'password' => Hash::make('123456'),
         ]);
 
-        $user = User::whereName("admin")->firstOrFail();
-
-        $superAdmin = Role::create([
+        /*in this system we have four roles which is : */
+        $admin = Role::create([
             "name" => "admin"
         ]);
 
@@ -36,13 +36,17 @@ class DatabaseSeeder extends Seeder
             "name" => "seller"
         ]);
 
+        $sellerManager = Role::create([
+            "name" => "sales manager"
+        ]);
+
+        $accountant = Role::create([
+           "name" => "accountant"
+        ]);
+
         /* general permissions */
         Permission::create([
             "name" => "access"
-        ]);
-
-        Permission::create([
-            "name" => "index"
         ]);
 
         /* permissions for managing products */
@@ -61,6 +65,11 @@ class DatabaseSeeder extends Seeder
         Permission::create([
             "name" => "deleteProducts"
         ]);
+
+        Permission::create([
+            "name" => "saleProducts"
+        ]);
+
 
         /* permissions for managing users */
         Permission::create([
@@ -82,10 +91,10 @@ class DatabaseSeeder extends Seeder
         $allPermissions = Permission::all();
 
         foreach($allPermissions as $permission) {
-            $superAdmin->allowTo($permission->name);
+            $admin->allowTo($permission->name);
         }
-
-        $user->asignRole($superAdmin);
+        $user = User::whereName("admin")->firstOrFail();
+        $user->asignRole($admin);
 
     }
 }

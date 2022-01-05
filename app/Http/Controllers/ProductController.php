@@ -23,8 +23,8 @@ class ProductController extends Controller
             "type" => "required|exists:types,id",
             "price"=> "required|numeric|gt:0",
             "dose" => "required|string",
-            "production_date" => "required|date|before:$request->expiry_date",
-            "expiry_date" => "required|date|after:$request->production_date",
+            "purchase_date" => "required|date|before:$request->expiry_date",
+            "expiry_date" => "required|date|after:$request->purchase_date",
             "quantity" => "required|numeric",
             "company_name" => "nullable|string",
         ]) ;
@@ -41,7 +41,7 @@ class ProductController extends Controller
                 "dose" => $data["dose"],
                 "price" => $data["price"],
                 "expiry_date" => $data["expiry_date"],
-                "production_date" => $data["production_date"],
+                "purchase_date" => $data["purchase_date"],
                 "quantity" => $data["quantity"],
                 "created_by_id" => Auth::user()->id,
                 "company_name" => $data["company_name"] ?? "",
@@ -54,7 +54,7 @@ class ProductController extends Controller
     }
 
     public function index($id) {
-        $product = Product::where([["id","=",$id],["quantity",">","0"]])->firstOrFail();
+        $product = Product::where([["id","like",$id],["quantity",">","0"]])->firstOrFail();
         if ($product) {
             return $this->success($product, "success", 200);
         } else {

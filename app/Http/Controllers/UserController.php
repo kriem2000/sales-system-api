@@ -94,4 +94,11 @@ class UserController extends Controller
             return $this->error("something went wrong !", null, 400);
         }
     }
+
+    public function info(Request $request) {
+        return [
+            "userCred" => auth()->user(),
+            "permissions" => auth()->user()->permissions()->toArray(),
+        ];
+    }
 }

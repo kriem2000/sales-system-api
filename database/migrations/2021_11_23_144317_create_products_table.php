@@ -14,17 +14,18 @@ class CreateProductsTable extends Migration
     public function up()
     {
         Schema::create('products', function (Blueprint $table) {
-            $table->id();
+            $table->string("id");
             $table->string('name');
             $table->text('detail')->nullable();
             $table->unsignedBigInteger("type_id");
             $table->string("dose");
             $table->date("expiry_date");
-            $table->date("production_date");
+            $table->date("purchase_date");
             $table->double("price");
             $table->bigInteger("quantity")->default(0);
             $table->unsignedBigInteger("created_by_id");
             $table->string("company_name")->nullable();
+            $table->primary(["id"]);
             $table->timestamps();
 
             $table->foreign("created_by_id")->references("id")->on("users")->onDelete("no action");;
