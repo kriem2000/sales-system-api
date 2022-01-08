@@ -18,7 +18,7 @@ class CreateFragmentedBillTable extends Migration
             $table->unsignedBigInteger("bill_id");
             $table->date("next_payment_date");
             $table->date("payment_date")->nullable();
-            $table->unsignedBigInteger("fragment_bill_status_id");
+            $table->unsignedBigInteger("fragment_bill_status_id")->default(2);
             $table->timestamps();
 
             $table->foreign("fragment_bill_status_id")->references("id")->on("bill_status");

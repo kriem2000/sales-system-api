@@ -1,0 +1,24 @@
+-first of all check if the sales Quantity for each product is less than the original product quantity in the database.
+-second of all check if the price for each product has not been manipulated from the front end.
+then we can talk about the rest !!!!!!!!
+
+    #step 1:
+----insert into bills : 
+
+1- if paymentmethod == نقدي (id == 1) :
+	- then billstatus == تم الدفع (id == 1)
+
+2- if paymentmethod == حوالة مصرفية || paymentmethod == آجل
+	-then bilstatus == في الانتظار (id == 1)
+
+    #step 2 (only if paymentmethod == آجل):
+-----insert into fragmented_bill.
+
+    #step 3 :
+-----insert into sales.
+
+    #step 4 :
+-----insert into sales_products.
+
+    #step 5 (or can be the first step):
+-----update products quantity for each product in basket.

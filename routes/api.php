@@ -10,6 +10,8 @@ use App\Http\Controllers\PaymentMethodController;
 use App\Http\Controllers\RoleController;
 use App\Http\Controllers\TypeController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\BillController;
+use App\Http\Controllers\SaleController;
 
 /*
 |--------------------------------------------------------------------------
@@ -26,7 +28,8 @@ Route::post('auth/signIn', [AuthController::class, 'signIn']);
 Route::group(["middleware"=>"auth:sanctum","abilities:access"], function() {
     Route::get('user', [UserController::class, "info"]);
     Route::get("signOut",[AuthController::class,"signOut"]);
-    Route::get("allTypes",[TypeController::class,"index"])->middleware("abilities:indexProducts,createProducts");
+    Route::get("allTypes",[TypeController::class,"index"])
+        ->middleware("abilities:indexProducts,createProducts");
 });
 
 
@@ -46,8 +49,21 @@ Route::middleware(["auth:sanctum","abilities:access,indexUsers,createUsers,updat
 
 /*routes group for product management*/
 Route::middleware(["auth:sanctum","abilities:access,indexProducts"])->group(function () {
-    Route::post("addProduct",[ProductController::class, "create"])->middleware("abilities:createProducts");
-    Route::get("product/{id}",[ProductController::class, "index"])->middleware("abilities:saleProducts");
-    Route::get("paymentMethods", [PaymentMethodController::class,"index"])->middleware("abilities:saleProducts");;
+    Route::post("addProduct",[ProductController::class, "create"])
+        ->middleware("abilities:createProducts");
+    Route::get("product/{id}",[ProductController::class, "index"])
+        ->middleware("abilities:saleProducts");
+    Route::get("paymentMethods", [PaymentMethodController::class,"index"])
+        ->middleware("abilities:saleProducts");
+
+    /* routes for sale and generate a single bill */
+    Route::post("saleProduct", [ProductController::class, "sale"])
+        ->middleware("abilities:saleProducts");
+    Route::get("createBill", [BillController::class, "create"])
+        ->middleware("abilities:saleProducts");
+    Route::get("createSale",[SaleController::class, "create"])
+        ->middleware("abilities:saleProducts");
+    /*******/
+
 });
    /********/

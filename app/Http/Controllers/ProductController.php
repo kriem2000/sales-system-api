@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Validator;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rule;
+use App\Http\Controllers\BillController;
 
 class ProductController extends Controller
 {
@@ -62,4 +63,53 @@ class ProductController extends Controller
         }
     }
 
+    public function sale(Request $request) {
+        $error = false;
+        /* common validation */
+        $data = Validator::make($request->all(), [
+            "productsInBasket.*.id" => "exists:products,id",
+            "productsInBasket.*" => "required",
+            "companyname" => "required",
+            "companyaddress" => "nullable",
+            "buyername" => "nullable",
+            "delegatename" => "nullable",
+            "sponsorname" => "nullable",
+            "paymentMethod" => "exists:payment_methods,id",
+            "discount" => "required",
+        ]);
+
+        if($request->input("paymentMethod") == '3') {
+            if ($request->input("Paymentperiod") == null || $request->input("fragmentnumber") == null) {
+                $error = true;
+            }
+        }
+
+         /*
+          * first of all check if the sales Quantity for each product is
+          *  less than the original product quantity in the database.
+          *  second of all check if the price for each product
+          *  has not been manipulated from the front end.
+          * */
+        foreach ($request->productsInBasket as $product) {
+            $currentProduct = Product::find($product["id"]);
+            if ($currentProduct->price != $product["price"] ||
+                $product["salesQuantity"] > $currentProduct->quantity) {
+                $error = true;
+                break;
+            }
+        }
+
+        if ($data->fails() != true && $error != true) {
+            $data = $request->all();
+           /*
+            *  #step 1:
+            *   insert into bills :
+            * */
+            $data = [ "data" => $data ];
+            return redirect()->action([BillController::class, 'create'],$data);
+        } else {
+            return $this->error("error", "الرجاء مراجعة المدخلات", 400);
+        }
+
+    }
 }
