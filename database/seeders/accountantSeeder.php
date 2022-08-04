@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
+use App\Models\Role;
 
 class accountantSeeder extends Seeder
 {
@@ -13,6 +14,8 @@ class accountantSeeder extends Seeder
      */
     public function run()
     {
-        //
+        $accountant = Role::where("name","accountant")->first();
+        $accountant->allowTo("indexProducts");
+        $accountant->allowTo("access");
     }
 }

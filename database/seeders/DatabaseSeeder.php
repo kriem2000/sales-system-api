@@ -23,7 +23,7 @@ class DatabaseSeeder extends Seeder
         /* admin who is Responsible for all the system */
         DB::table('users')->insert([
             'name' => "admin",
-            'email' => "admin@gmail.com",
+            'email' => "ibrahim@wasfat.com",
             'password' => Hash::make('123456'),
         ]);
 
@@ -88,6 +88,11 @@ class DatabaseSeeder extends Seeder
             "name" => "deleteUsers"
         ]);
 
+        /*permission for viewing statistics*/
+        Permission::create([
+            "name" => "viewStatistics"
+        ]);
+
         $allPermissions = Permission::all();
 
         foreach($allPermissions as $permission) {
@@ -96,5 +101,13 @@ class DatabaseSeeder extends Seeder
         $user = User::whereName("admin")->firstOrFail();
         $user->asignRole($admin);
 
+        $this->call([
+            accountantSeeder::class,
+            billStatusSeeder::class,
+            PaymentMethodsSeeders::class,
+            salesManagerSeeder::class,
+            sellerSeeder::class,
+            TypesSeeder::class,
+        ]);
     }
 }

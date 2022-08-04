@@ -21,7 +21,8 @@ class CreateProductsTable extends Migration
             $table->string("dose");
             $table->date("expiry_date");
             $table->date("purchase_date");
-            $table->double("price");
+            $table->double("sale_price");
+            $table->double("purchase_price");
             $table->bigInteger("quantity")->default(0);
             $table->unsignedBigInteger("created_by_id");
             $table->string("company_name")->nullable();

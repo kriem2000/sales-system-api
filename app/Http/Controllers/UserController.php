@@ -36,7 +36,7 @@ class UserController extends Controller
         }
     }
 
-    public function indexAll($role) {
+    public function indexAll($role = "%") {
         $allUsersWithRoles = User::whereHas("roles" , function($query) use($role){
             $query->where("name", "like", $role);
         })
@@ -54,7 +54,7 @@ class UserController extends Controller
             //     ->where("roles.name","like" ,$role)
             //     ->where("users.id", "!=", Auth::user()->id)
             //     ->get();
-            return $this->success($allUsersWithRoles,sizeof($allUsersWithRoles),200);
+            return $this->success($allUsersWithRoles,$role,200);
     }
 
     public function update(User $user,Request $request) {
@@ -99,6 +99,9 @@ class UserController extends Controller
         return [
             "userCred" => auth()->user(),
             "permissions" => auth()->user()->permissions()->toArray(),
+            "createdProducts" => auth()->user()->products->count(),
+            "totalSales" => auth()->user()->totalSales(),
+            "totalReturned" => auth()->user()->totalReturned(),
         ];
     }
 }

@@ -59,4 +59,25 @@ class User extends Authenticatable
     public function permissions() {
         return $this->roles->map->permissions->flatten()->pluck("name")->unique();
     }
+
+    public function products() {
+        return $this->hasMany(Product::class, "created_by_id");
+    }
+
+    public function sales() {
+        return $this->hasMany(Sale::class, "sold_by_id");
+    }
+
+    public function totalSales() {
+        $totalSales = $this->sales->map->bills
+            ->map(function($item, $key) {
+            return $item["original_total"] - ($item["original_total"] * $item["applied_discount"]);
+            })->sum();
+        return $totalSales;
+    }
+
+    public function totalReturned() {
+        $totalReturned = $this->sales->map->bills->pluck("total_returned")->sum();
+        return $totalReturned;
+    }
 }
